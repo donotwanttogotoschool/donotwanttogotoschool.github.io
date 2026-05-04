@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent 评估整理：从 benchmark 到 OpenRouter | Field Notes</title>
+  <meta name="description" content="智能客服项目中的 Agent 评估笔记，包含 benchmark 总结、工程视角和 OpenRouter 的作用。">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="../script.js"></script>
+</head>
+<body data-page="post">
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <div class="page-noise" aria-hidden="true"></div>
+
+  <main class="post-wrap">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+
+    <article class="post-shell reveal">
+      <header class="post-header">
+        <div>
+          <span class="post-kicker">项目笔记 / Agent Evaluation</span>
+          <h1 class="post-title">Agent 评估整理：从 benchmark 到 OpenRouter</h1>
+          <p class="lead">
+            最近在做智能客服项目，发现 Agent 评估真的不能只看最后一句答得对不对。这篇笔记把我查到的评测框架、常见 benchmark 和工程工具理解，按项目视角整理了一遍。
+          </p>
+        </div>
+        <aside class="meta-card">
+          <p><strong>日期</strong><br>2026.05.04</p>
+          <p><strong>项目</strong><br>智能客服 / Agent 评估</p>
+          <p><strong>标签</strong><br>Benchmark / Tool Use / OpenRouter</p>
+        </aside>
+      </header>
+
+      <div class="post-body">
+        <section>
+          <h2>我现在的核心理解</h2>
+          <p>Agent 的评估重点，不只是问“模型答得好不好”，而是看它能不能在正确的上下文里，调用正确的工具，遵守正确的规则，并且以还能接受的成本，把任务稳定做完。</p>
+          <p>所以对我这种正在做客服项目的人来说，最后一句回复对不对只是结果，真正要看的还包括中间过程有没有跑偏、工具有没有调错、失败到底卡在哪一步。</p>
+        </section>
+
+        <section>
+          <h2>为什么 Agent 需要单独评估</h2>
+          <p>普通 LLM 评估很多时候关注的是回答质量，但 Agent 会自己做规划、调工具、查外部系统，所以只看文本输出很容易把问题漏掉。更合理的做法，是把它当成一个会执行任务的系统来看。</p>
+          <ul>
+            <li>任务最后有没有完成</li>
+            <li>工具是不是调对了</li>
+            <li>中间过程有没有偏离用户意图</li>
+            <li>成本、延迟和稳定性是不是能接受</li>
+            <li>失败能不能定位到具体原因</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>我整理的一张常见论文 / Benchmark 表</h2>
+          <p>如果后面要把这部分写成博客或者答辩材料，这张表很好用。因为它不是只列论文名，而是顺手说明每个 benchmark 更适合拿来解释什么。</p>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>论文 / Benchmark</th>
+                  <th>顶会</th>
+                  <th>适合博客引用的点</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>τ-bench</strong></td>
+                  <td>ICLR 2025</td>
+                  <td>真实业务域里的“用户-Agent-工具-规则”交互；用最终数据库状态评估任务完成，并提出 <code>pass^k</code> 看稳定性。</td>
+                </tr>
+                <tr>
+                  <td><strong>AgentBench</strong></td>
+                  <td>ICLR 2024</td>
+                  <td>早期经典 Agent 综合评测，覆盖 OS、数据库、知识图谱、网页购物、网页浏览等交互环境。</td>
+                </tr>
+                <tr>
+                  <td><strong>AgentBoard</strong></td>
+                  <td>NeurIPS 2024 Datasets & Benchmarks</td>
+                  <td>多轮 Agent 轨迹分析，强调 progress rate、grounding、可视化诊断，不只看最终成功率。</td>
+                </tr>
+                <tr>
+                  <td><strong>WebArena</strong></td>
+                  <td>ICLR 2024</td>
+                  <td>真实网页环境中的长程任务，适合说明真实业务操作比静态 QA 难很多。</td>
+                </tr>
+                <tr>
+                  <td><strong>VisualWebArena</strong></td>
+                  <td>ACL 2024</td>
+                  <td>WebArena 的多模态扩展，适合讲视觉网页、截图理解、UI 操作类 Agent 评估。</td>
+                </tr>
+                <tr>
+                  <td><strong>GAIA</strong></td>
+                  <td>ICLR 2024</td>
+                  <td>评估推理、多模态、网页浏览、工具使用等通用助手能力，适合拿来说明“通用智能助理”还很难。</td>
+                </tr>
+                <tr>
+                  <td><strong>Mind2Web</strong></td>
+                  <td>NeurIPS 2023 Datasets & Benchmarks</td>
+                  <td>通用网页 Agent 数据集，任务来自真实网站，适合写网页型业务 Agent 的评估。</td>
+                </tr>
+                <tr>
+                  <td><strong>ToolLLM / ToolBench</strong></td>
+                  <td>ICLR 2024</td>
+                  <td>工具调用训练与评估，覆盖大量真实 API，适合补充 Tool Call Accuracy / Tool Use 这类视角。</td>
+                </tr>
+                <tr>
+                  <td><strong>API-Bank</strong></td>
+                  <td>EMNLP 2023</td>
+                  <td>工具增强 LLM 的规划、检索、调用能力评估，包含可运行 API 工具系统。</td>
+                </tr>
+                <tr>
+                  <td><strong>BizBench</strong></td>
+                  <td>ACL 2024</td>
+                  <td>更贴近业务 / 金融推理任务，评估财务数据上的数量推理和程序合成。</td>
+                </tr>
+                <tr>
+                  <td><strong>SWE-bench</strong></td>
+                  <td>ICLR 2024 Oral</td>
+                  <td>虽然偏软件工程，但很适合类比企业任务：从真实问题到 patch，再用测试验证最终状态。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>如果只从我现在这个客服 Agent 项目的角度看，我会优先关注 <strong>τ-bench</strong>、<strong>AgentBoard</strong>、<strong>ToolLLM / ToolBench</strong>、<strong>API-Bank</strong> 这几类，因为它们要么更贴近真实流程，要么更适合分析工具调用问题。</p>
+        </section>
+
+        <section>
+          <h2>项目落地时我更关心哪些指标</h2>
+          <p>从论文里看，评估维度可以很多，但如果真的要在项目里跑起来，我觉得最该优先看的还是两个：</p>
+          <ul>
+            <li><strong>Tool Call Accuracy</strong>：工具有没有选对，参数提取得对不对。</li>
+            <li><strong>Task Completion Rate</strong>：最终业务目标有没有真的完成。</li>
+          </ul>
+          <p>前者更像是在看 Agent 会不会做事，后者是在看它有没有把事情做成。对于客服项目，这两个指标往往比单独看回答流畅度更关键。</p>
+        </section>
+
+        <section>
+          <h2>OpenRouter 在这个问题里算什么</h2>
+          <p>顺着评估这个话题，我也顺手记一下 <code>OpenRouter</code>。按我现在的理解，它更像是一个统一的模型接入层，而不是评估标准本身。</p>
+          <ul>
+            <li>方便把不同来源的模型接到同一套调用流程里</li>
+            <li>做实验时更容易切换模型，不用来回改太多业务代码</li>
+            <li>如果想做多模型对比，它能明显降低接入成本</li>
+          </ul>
+          <p>对学生项目来说，它比较有价值的地方在于：</p>
+          <ul>
+            <li>可以在同一份测试集上比较不同模型效果</li>
+            <li>可以观察不同模型在工具调用、成本、延迟上的差异</li>
+            <li>可以给同一个 Agent 工作流做 A/B 测试</li>
+          </ul>
+          <p class="note">OpenRouter 不是 benchmark，也不是评估框架。它更像实验平台里的模型入口，真正的评估还是要靠你自己定义指标、整理测试集、记录轨迹和分析结果。</p>
+        </section>
+
+        <section>
+          <h2>我现在觉得比较实用的做法</h2>
+          <ul>
+            <li>优先从真实业务数据里整理测试集</li>
+            <li>没有真实数据时，先人工构造种子样例</li>
+            <li>同时看工具调用细节和最终状态是否正确</li>
+            <li>失败样本要做归因分析，而不是只记“失败”</li>
+          </ul>
+          <p>这也是我这次查资料后最大的变化：以前更容易只盯着最终回答，现在更倾向于把失败拆开看，分清楚是理解意图错了、工具选错了、参数错了，还是规则没遵守。</p>
+        </section>
+      </div>
+    </article>
+  </main>
+</body>
+</html>

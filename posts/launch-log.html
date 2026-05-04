@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>版本首发前，首页结构怎么收紧 | Field Notes</title>
+  <meta name="description" content="一个示例项目记录页，展示如何在静态博客里写阶段目标、改动原因和媒体演示。">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="../script.js"></script>
+</head>
+<body data-page="post">
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <div class="page-noise" aria-hidden="true"></div>
+
+  <main class="post-wrap">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+
+    <article class="post-shell reveal">
+      <header class="post-header">
+        <div>
+          <span class="post-kicker">项目日志 / Week 03</span>
+          <h1 class="post-title">版本首发前，首页结构怎么收紧</h1>
+          <p class="lead">
+            这篇示例文章演示一种很实用的写法：每次只记录一个阶段，把目标、改动和下一步写清楚，不把文章写成流水账。
+          </p>
+        </div>
+        <aside class="meta-card">
+          <p><strong>日期</strong><br>2026.05.04</p>
+          <p><strong>项目</strong><br>作品集 2.0</p>
+          <p><strong>标签</strong><br>首页重构 / 视觉节奏 / 内容组织</p>
+        </aside>
+      </header>
+
+      <div class="post-body">
+        <section>
+          <h2>这一轮的目标</h2>
+          <p>原来的首页信息太散，用户一进来先看到零碎模块，看不到项目主线。所以这一轮只做三件事：</p>
+          <ul>
+            <li>把首屏改成一句话讲清楚项目是什么。</li>
+            <li>把“项目展示”改成“项目过程展示”。</li>
+            <li>为后续插入动图和短视频预留稳定位置。</li>
+          </ul>
+        </section>
+
+        <section id="media-guide">
+          <h2>媒体演示区怎么放</h2>
+          <div class="media-shell">
+            <div class="media-frame">
+              <div>
+                <strong>这里可以换成真实动图或短视频</strong>
+                <p>推荐把你的文件放到 <code>assets/</code>，然后把这个占位块替换成 <code>img</code>、<code>video</code> 或 <code>picture</code> 标签。</p>
+              </div>
+            </div>
+          </div>
+          <p class="note">建议优先用 <code>mp4</code> 或 <code>webm</code> 做循环片段。除非你明确需要兼容非常老的环境，否则不建议大量使用 <code>gif</code>。</p>
+        </section>
+
+        <section>
+          <h2>这次具体改了什么</h2>
+          <p>我把首页从“多个平级模块堆叠”改成“主叙事 + 项目墙 + 记录列表 + 时间线”。这样访客先理解你在做什么，再决定要不要点进某一篇细看。</p>
+          <p>同时把视觉元素统一到一组暖色调和网格系统上，页面看起来会更像一个持续更新的项目工作台，而不是一次性的展示页。</p>
+        </section>
+
+        <section>
+          <h2>下一步准备验证</h2>
+          <ul>
+            <li>每篇文章只保留一个重点，避免一篇里塞太多开发细节。</li>
+            <li>把每周最关键的变化录成 5 秒以内的短循环。</li>
+            <li>后面如果文章变多，再增加标签页或归档页。</li>
+          </ul>
+        </section>
+      </div>
+    </article>
+  </main>
+</body>
+</html>
