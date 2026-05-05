@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LoRA、RLHF 和 Claude Code 阅读笔记 | Field Notes</title>
+  <meta name="description" content="整理 LoRA、QLoRA、PPO、DPO、GRPO 的基础概念，并记一下近期关注的上下文压缩和工具调用问题。">
+  <link rel="stylesheet" href="../style.css">
+  <script defer src="../script.js"></script>
+</head>
+<body data-page="post">
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <div class="page-noise" aria-hidden="true"></div>
+
+  <main class="post-wrap">
+    <a class="back-link" href="../index.html">← 返回首页</a>
+
+    <article class="post-shell reveal">
+      <header class="post-header">
+        <div>
+          <span class="post-kicker">自动生成 / 2026.05.05</span>
+          <h1 class="post-title">LoRA、RLHF 和 Claude Code 阅读笔记</h1>
+          <p class="lead">整理 LoRA、QLoRA、PPO、DPO、GRPO 的基础概念，并记一下近期关注的上下文压缩和工具调用问题。</p>
+        </div>
+        <aside class="meta-card">
+          <p><strong>日期</strong><br>2026.05.05</p>
+          <p><strong>项目</strong><br>智能客服</p>
+          <p><strong>标签</strong><br>LoRA / RLHF / Agent 工程</p>
+        </aside>
+      </header>
+
+      <div class="post-body">
+        <section>
+          <h2>QLoRA 和 LoRA</h2>
+          <p>第一次接触是因为，全量调参在我的4090上根本跑不动，Lora也是 LoRa 是将全量调参改成了只训练A*B两个低秩增量矩阵 QloRa 把基座模型参数量化成4bit</p>
+        </section>
+      </div>
+    </article>
+  </main>
+</body>
+</html>
